@@ -5,7 +5,23 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: process.env.CLIENT_URL })); // Разрешаем запросы с твоего фронтенда
+
+// Проверяем, загружены ли переменные среды
+if (!process.env.STRIPE_SECRET_KEY || !process.env.CLIENT_URL) {
+    console.error("❌ Ошибка: Переменные среды не загружены.");
+    process.exit(1);
+}
+
+// Логируем CLIENT_URL для проверки
+console.log("✅ CLIENT_URL:", process.env.CLIENT_URL);
+
+// Разрешаем запросы CORS
+app.use(cors({
+    origin: "*", // Разрешаем ВСЕМ доменам (для тестов)
+    methods: ["POST", "GET"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true, 
+}));
 
 app.post("/create-checkout-session", async (req, res) => {
     try {
@@ -32,9 +48,10 @@ app.post("/create-checkout-session", async (req, res) => {
             cancel_url: `${process.env.CLIENT_URL}/cart-page`,
         });
 
+        console.log("✅ Session created:", session.id);
         res.json({ url: session.url });
     } catch (error) {
-        console.error("Error creating checkout session:", error);
+        console.error("❌ Error creating checkout session:", error);
         res.status(500).json({ error: error.message });
     }
 });
