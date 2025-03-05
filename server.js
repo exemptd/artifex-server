@@ -48,13 +48,17 @@ app.post("/create-checkout-session", async (req, res) => {
             cancel_url: `${process.env.CLIENT_URL}/cart-page`,
         });
 
-        console.log("✅ Session created:", session.id);
-        res.json({ url: session.url });
+        console.log("✅ Stripe session created:", session); // Логируем ответ
+        
+        res.json({ sessionId: session.id, url: session.url });
+
     } catch (error) {
         console.error("❌ Error creating checkout session:", error);
         res.status(500).json({ error: error.message });
     }
 });
 
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));
+
