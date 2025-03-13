@@ -60,5 +60,8 @@ app.post("/create-checkout-session", async (req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
+app.get("/", (req, res) => {
+    res.send("🔥 Server is running! Go to /create-checkout-session");
+});
 app.listen(PORT, () => console.log(`🔥 Server running on port ${PORT}`));
 
